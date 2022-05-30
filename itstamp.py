@@ -20,7 +20,7 @@ high_white = np.array([255, 255, 255])
 # Manipulação da imagem para colocar a camisa em evidência
 imagem1 = cv.cvtColor(imagem, cv.COLOR_BGR2GRAY)
 mask1 = cv.inRange(imagem, low_white, high_white) 
-erode = cv.morphologyEx(mask1,cv.MORPH_ERODE,cv.getStructuringElement(cv.MORPH_CROSS,(3,3)))
+#erode = cv.morphologyEx(mask1,cv.MORPH_ERODE,cv.getStructuringElement(cv.MORPH_CROSS,(3,3)))
 res = cv.bitwise_and(imagem1, mask1)
 
 cv.namedWindow('Imagem com foco na camisa',cv.WINDOW_GUI_EXPANDED)
