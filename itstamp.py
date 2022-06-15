@@ -2,7 +2,10 @@ import cv2 as cv
 import sys
 import numpy as np
 from pathlib import Path
+import time
 
+# No fim eu explico
+inicio = time.time()
 # pegando o caminho da imagem
 path = Path(sys.path[0])
 caminhoImagem = str(path.parent.absolute()) + '\\itStamp\\PrimeiroTeste\\camisa1.png'
@@ -64,6 +67,9 @@ im_with_keypoints = cv.drawKeypoints(res, keypoints, np.array([]), (0,0,255), cv
 # Show blobs
 cv.namedWindow('Keypoints',cv.WINDOW_AUTOSIZE)
 cv.imshow("Keypoints", im_with_keypoints)
+
+fim = time.time()
+print("Tempo: " + str(int(round(fim - inicio, 0))) + " seg")
 
 cv.waitKey(0)
 

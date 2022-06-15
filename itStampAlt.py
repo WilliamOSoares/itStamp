@@ -24,7 +24,7 @@ mask1 = cv.morphologyEx(mask1,cv.MORPH_ERODE,cv.getStructuringElement(cv.MORPH_C
 res = cv.bitwise_and(imagem1, mask1)#cv.cvtColor(mask1, cv.COLOR_GRAY2BGR))
 
 cv.namedWindow('Imagem com foco na camisa',cv.WINDOW_AUTOSIZE)
-cv.imshow('Imagem com foco na camisa', res)
+cv.imshow('Imagem com foco na camisa', mask1)
 
 cv.waitKey(0)
 
