@@ -11,6 +11,7 @@ count = 0
 path = Path(sys.path[0])
 caminhoImagem = str(path.parent.absolute()) + '\\itStamp\\imgEntradaCam\\'
 caminhoResultado = str(path.parent.absolute()) + '\\itStamp\\imgSaidaCam\\'
+caminhoEstampa = str(path.parent.absolute()) + '\\itStamp\\Estampas\\Pikachu.png'
 
 # Intervalo de branco para ser encontrado
 low_white = np.array([200, 200, 200]) # B G R
@@ -75,7 +76,74 @@ while cameraCapture.isOpened() and cv.waitKey(1) == -1:
         # Show blobs
         cv.namedWindow('Keypoints',cv.WINDOW_AUTOSIZE)
         cv.imshow("Keypoints", im_with_keypoints)
-        cv.imwrite(caminhoResultado + "frame%d.jpg" % count, im_with_keypoints)
+        lista =[]
+        #Adicionando os pontos na lista
+        for keyPoint in keypoints:
+            x = keyPoint.pt[0]
+            y = keyPoint.pt[1]
+            s = keyPoint.size
+            cord = (x,y)
+            lista.append(cord)
+        #Achando o tamanho da área:        
+        rows,cols,_ = imagem.shape
+        imgResize = np.zeros((rows,cols),np.uint8)
+        pontoInit = []
+        pontoLarg = []
+        pontoAltu = []
+        print(lista)
+        for i in range(len(lista)):
+            y,x = lista[i]
+            if not pontoInit:
+                pontoInit = x,y
+                pontoLarg = x,y
+                pontoAltu = x,y
+            else:
+                if(x > (pontoAltu[0]-10) and y< pontoAltu[1]):
+                    pontoAltu = x,y
+                if(x < pontoInit[0]):
+                    pontoInit = x,y
+                if(x == pontoInit[0] and y< pontoInit[1]):
+                    pontoInit = x,y
+                if(x < pontoLarg[0] and y>(pontoLarg[1]-10)):
+                    pontoLarg = x,y
+
+        imgResize[int(pontoInit[0]),int(pontoInit[1])] = 255
+        imgResize[int(pontoLarg[0]),int(pontoLarg[1])] = 255
+        imgResize[int(pontoAltu[0]),int(pontoAltu[1])] = 255
+        cv.namedWindow("pontos de coordenada",cv.WINDOW_AUTOSIZE)
+        cv.imshow("pontos de coordenada", imgResize)
+
+        largInitX = pontoInit[1]
+        largFimX = pontoLarg[1]
+        altuInitY = pontoInit[0]
+        altuFimY = pontoAltu[0]  
+        larg = round(largFimX) - round(largInitX)
+        altu = round(altuFimY) - round(altuInitY)
+
+        # REMOVENDO OS PONTOS
+        img = cv.cvtColor(im_with_keypoints, cv.COLOR_BGR2GRAY)
+        contours, hierarchy = cv.findContours(img,cv.RETR_CCOMP,cv.CHAIN_APPROX_SIMPLE)
+        for i in range(len(contours)):
+            cv.drawContours(imagem, contours, i, (255,255,255), cv.FILLED, 8)
+        #cv.imshow("contorno", imagem)
+        # COLANDO A ESTAMPA    
+        estampa = cv.imread(caminhoEstampa)
+        #Fazendo a sobreposição dos pixels da área da camisa e colocando a estampa
+        resize = cv.resize(estampa, (int(larg),int(altu)))
+        #cv.namedWindow('estampa',cv.WINDOW_AUTOSIZE)
+        #cv.imshow("estampa", resize)
+
+        for r in range(rows):
+            for c in range(cols):
+                if(r>=largInitX and r<=largFimX):            
+                    if(c>= altuInitY and c<=altuFimY):
+                        imagem[c,r] = resize[int(c-altuInitY), int(r-largInitX)]
+
+        cv.namedWindow('Resultado',cv.WINDOW_AUTOSIZE)
+        cv.imshow("Resultado", imagem)
+        cv.imwrite(caminhoResultado + "frame.jpg", imagem)#cv.imwrite(caminhoResultado + "frame%d.jpg" % count, im_with_keypoints)
+
+
     count = count + 1
     
 
