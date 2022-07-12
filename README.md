@@ -1,2 +1,3 @@
-# itStamp
-visualização de estampa com realidade aumentada
+# it'stamp
+
+Visualização de estampa com realidade aumentada.
